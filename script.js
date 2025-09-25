@@ -1,52 +1,97 @@
-// This function runs when the page finishes loading
-function pageLoaded() {
-    console.log("Page has loaded successfully."); // For onload
+let focusCount = 0;
+let hoverCounts = [];
 
-    addTabFocus(); // Call function to add tabindex attributes
-    addFocusBlurListeners(); // Add focus and blur event listeners
-    addMouseListeners(); // Keep mouse event listeners (as required)
+function pageLoaded() {
+    console.log("🚀 Page has loaded successfully");
+
+    addTabFocus();
+    addFocusBlurListeners();
+    addMouseListeners();
+    addClickToggleBorders();
+    countNavFocus();
+    logExternalLinkClick();
 }
 
-// Add tabindex to all images and log it
 function addTabFocus() {
     const images = document.querySelectorAll("img");
     for (let i = 0; i < images.length; i++) {
         images[i].setAttribute("tabindex", "0");
-        console.log(`Tabindex added to image ${i + 1}`);
+        images[i].setAttribute("title", `Image #${i + 1}`);
+        hoverCounts[i] = 0;
+        console.log(`✅ Tabindex & tooltip added to image ${i + 1}`);
     }
 }
 
-// Add focus and blur event listeners to images
 function addFocusBlurListeners() {
     const images = document.querySelectorAll("img");
 
     images.forEach((img, index) => {
         img.addEventListener("focus", () => {
-            console.log(`Image ${index + 1} focused`);
-            img.style.outline = "3px solid #3498db";
+            focusCount++;
+            console.log(`🟦 Image ${index + 1} focused (${focusCount} total focuses)`);
+            img.style.outline = "3px dashed #2980b9";
+            img.style.boxShadow = "0px 0px 12px rgba(0, 150, 255, 0.6)";
         });
 
         img.addEventListener("blur", () => {
-            console.log(`Image ${index + 1} blurred`);
+            console.log(`⬜ Image ${index + 1} blurred`);
             img.style.outline = "none";
+            img.style.boxShadow = "none";
         });
     });
 }
 
-// Add mouse event listeners (existing ones you were told not to delete)
 function addMouseListeners() {
     const images = document.querySelectorAll("img");
 
     images.forEach((img, index) => {
         img.addEventListener("mouseover", () => {
-            console.log(`Mouse over image ${index + 1}`);
+            hoverCounts[index]++;
+            console.log(`🖱️ Mouse over image ${index + 1} (${hoverCounts[index]} times)`);
         });
 
         img.addEventListener("mouseleave", () => {
-            console.log(`Mouse left image ${index + 1}`);
+            console.log(`👋 Mouse left image ${index + 1}`);
         });
     });
 }
 
-// Assign pageLoaded to window onload
+function addClickToggleBorders() {
+    const images = document.querySelectorAll("img");
+
+    images.forEach((img, index) => {
+        let toggled = false;
+        img.addEventListener("click", () => {
+            toggled = !toggled;
+            if (toggled) {
+                img.style.border = "5px solid orange";
+                console.log(`🟠 Image ${index + 1} border toggled ON`);
+            } else {
+                img.style.border = "3px solid #555"; // default from CSS
+                console.log(`⚪ Image ${index + 1} border toggled OFF`);
+            }
+        });
+    });
+}
+
+function countNavFocus() {
+    const navLinks = document.querySelectorAll("nav a");
+    navLinks.forEach((link, index) => {
+        link.setAttribute("tabindex", "0");
+
+        link.addEventListener("focus", () => {
+            console.log(`🔗 Navigation link focused: "${link.textContent}"`);
+        });
+    });
+}
+
+function logExternalLinkClick() {
+    const externalLinks = document.querySelectorAll("a[target='_blank']");
+    externalLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+            console.log(`🌐 External link clicked: ${link.href}`);
+        });
+    });
+}
+
 window.onload = pageLoaded;
